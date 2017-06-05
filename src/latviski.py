@@ -1,9 +1,7 @@
-import itertools
+from src.tools.db_entries import Noun, Verb, Word
 import shelve
 import random
 
-
-PRONOUNS = ["Es", "Tu", "Viņš/Viņa", "Mēs", "Jūs", "Viņi/Viņas"]
 
 
 class Latviski:
@@ -14,29 +12,22 @@ class Latviski:
             self.db = db
 
             if options["add"]:
-                if options["<part-of-speech>"] == "verb":
-                    self.add_verb(options["<word>"])
-                elif options["<part-of-speech>"] == "noun":
-                    self.add_noun(options["<word>"])
-                else:
-                    print("Invalid part of speech.")
+                self.add_word(options["<word>"], options["<part-of-speech>"])
 
             if options["test"]:
-                self.test_verb(options["<word>"])
+                word = options["<word>"]
+                if word in self.db:
+                    self.db[word].test()
+                else:
+                    print(f"There is no word '{word}' in your dictionary!")
 
-    def add_verb(self, verb):
-        print(f"Please provide the necessary information about '{verb}'")
-        db_entry = {}
-
-        for tense in ["present", "past", "future"]:
-            print(f"{tense.capitalize()} Tense:")
-            db_entry[tense] = {f"{article} {input('{0} > '.format(article))}": None for article in PRONOUNS}
-
-        print("Please translate each of the following into English.")
-        for tense in db_entry:
-            db_entry[tense] = {latvian: input(f"{latvian} > ") for latvian in db_entry[tense]}
-
-        self.db[verb] = db_entry
+    def add_word(self, word, part_of_speech):
+        if part_of_speech == "verb":
+            self.db[word] = Verb(word)
+        elif part_of_speech == "noun":
+            self.db[word] = Noun(word)
+        else:
+            self.db[word] = Word(word)
 
     def test_verb(self, verb):
         try:
@@ -45,13 +36,10 @@ class Latviski:
             translations += list(self.db[verb]["future"].items())
             random.shuffle(translations)
 
-            answers = {english: {"actual": input(f"{english} > "), "correct": latvian} for english, latvian in translations}
+            answers = {latvian: {"actual": input(f"{latvian} > "), "correct": english} for english, latvian in translations}
 
             total_correct = len([answer for answer in answers.values() if answer["correct"] == answer["actual"]])
             print(f"You scored {total_correct} out of {len(answers)}: {(total_correct/len(answers)) * 100} %")
         except KeyError:
             print("no!!")
-
-    def add_noun(self, noun):
-        pass
 

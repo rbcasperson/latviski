@@ -15,7 +15,7 @@ setup(
         'Programming Language :: Python :: 3.6'
     ],
     keywords='cli',
-    install_requires=['docopt'],
+    install_requires=['docopt', 'pydash'],
     packages=find_packages(),
     entry_points={
         'console_scripts': [

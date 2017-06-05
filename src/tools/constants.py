@@ -1,0 +1,1 @@
+PRONOUNS = ["Es", "Tu", "Viņš/Viņa", "Mēs", "Jūs", "Viņi/Viņas"]
